@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MS Word + कृतिदेव स्टूडियो (PC Edition)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root {
+    --word-blue: #185abd;
+    --word-blue-dark: #103f91;
+    --word-ribbon: #f3f2f1;
+    --word-bg: #e1dfdd;
+    --card: #ffffff;
+    --tx: #201f1e;
+    --mu: #605e5c;
+    --bd: #d2d0ce;
+    --ac: #c2410c;
+    --acx: #ffffff;
+    --page-bg: #ffffff;
+    --page-tx: #111111;
+  }
+
+  :root[data-theme="dark"] {
+    --word-blue: #0f408f;
+    --word-blue-dark: #092c66;
+    --word-ribbon: #252423;
+    --word-bg: #161514;
+    --card: #2d2c2b;
+    --tx: #f3f2f1;
+    --mu: #a19f9d;
+    --bd: #3b3a39;
+    --ac: #fb923c;
+    --acx: #1a1308;
+    color-scheme: dark;
+  }
+
+  * {
+    box-sizing: border-box;
+    user-select: none;
+  }
+
+  body {
+    margin: 0;
+    background: var(--word-bg);
+    color: var(--tx);
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, "Noto Sans Devanagari", sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Ribbon Styling */
+  .ribbon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 5px 8px;
+    min-height: 30px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--tx);
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.12s ease;
+  }
+  .ribbon-btn:hover {
+    background: rgba(128, 128, 128, 0.14);
+    border-color: var(--bd);
+  }
+  .ribbon-btn:active, .ribbon-btn.active {
+    background: rgba(24, 90, 189, 0.16);
+    border-color: #185abd;
+  }
+  .ribbon-btn-lg {
+    flex-direction: column;
+    padding: 6px 10px;
+    min-height: 54px;
+    font-size: 0.75rem;
+    gap: 4px;
+  }
+  .ribbon-btn-lg i {
+    font-size: 1.15rem;
+  }
+
+  .ribbon-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 4px 10px 2px;
+    border-right: 1px solid var(--bd);
+    min-height: 76px;
+  }
+  .ribbon-group-content {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+  .ribbon-group-label {
+    text-align: center;
+    font-size: 0.68rem;
+    color: var(--mu);
+    margin-top: 2px;
+    letter-spacing: 0.02em;
+  }
+
+  select.ribbon-select, input.ribbon-input {
+    font: inherit;
+    font-size: 0.82rem;
+    padding: 4px 8px;
+    height: 30px;
+    border-radius: 5px;
+    border: 1px solid var(--bd);
+    background: var(--card);
+    color: var(--tx);
+    outline: none;
+  }
+  select.ribbon-select:focus, input.ribbon-input:focus {
+    border-color: #185abd;
+  }
+
+  /* Pinned Kruti Dev Quick Bar */
+  .kd-bar {
+    background: var(--card);
+    border-bottom: 1px solid var(--bd);
+    padding: 6px 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    z-index: 10;
+  }
+  .kd-bar button, .kd-bar select {
+    font: inherit;
+    font-size: 0.84rem;
+    padding: 4px 10px;
+    min-height: 30px;
+    border-radius: 6px;
+    border: 1px solid var(--bd);
+    background: var(--card);
+    color: var(--tx);
+    cursor: pointer;
+  }
+  .kd-bar button:hover {
+    border-color: var(--ac);
+  }
+  .kd-bar button.p {
+    background: var(--ac);
+    color: var(--acx);
+    border-color: var(--ac);
+    font-weight: 600;
+  }
+
+  /* Workspace & Ruler */
+  .workspace {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 16px 60px;
+    position: relative;
+  }
+
+  .ruler-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    background: var(--word-bg);
+    padding: 6px 0 4px;
+  }
+  .ruler {
+    width: 816px;
+    height: 22px;
+    background: var(--card);
+    border: 1px solid var(--bd);
+    border-radius: 3px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    font-size: 9px;
+    color: var(--mu);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  /* Document Page (A4 Default) */
+  .page-shell {
+    position: relative;
+    width: 816px;
+    min-height: 1056px;
+    background: var(--page-bg);
+    color: var(--page-tx);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22);
+    margin-top: 6px;
+    transition: width 0.2s, min-height 0.2s, padding 0.2s;
+    transform-origin: top center;
+  }
+
+  /* Page Borders */
+  .page-shell.border-box::after {
+    content: "";
+    position: absolute;
+    inset: 24px;
+    border: 2px solid #222;
+    pointer-events: none;
+  }
+  .page-shell.border-double::after {
+    content: "";
+    position: absolute;
+    inset: 22px;
+    border: 5px double #222;
+    pointer-events: none;
+  }
+  .page-shell.border-dashed::after {
+    content: "";
+    position: absolute;
+    inset: 24px;
+    border: 2px dashed #444;
+    pointer-events: none;
+  }
+  .page-shell.border-gold::after {
+    content: "";
+    position: absolute;
+    inset: 20px;
+    border: 4px ridge #b45309;
+    pointer-events: none;
+  }
+
+  /* Watermark Overlay */
+  .watermark-layer {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+  .watermark-text {
+    font-size: 4.5rem;
+    font-weight: 800;
+    color: rgba(0, 0, 0, 0.065);
+    transform: rotate(-35deg);
+    white-space: nowrap;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* Editable Content Area */
+  #ed {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    min-height: 1056px;
+    padding: 72px 72px;
+    outline: none;
+    font-size: 18px;
+    line-height: 1.65;
+    font-family: "Noto Sans Devanagari", Mangal, Calibri, sans-serif;
+    overflow-wrap: anywhere;
+    user-select: text;
+    color: #111;
+  }
+  #ed:empty:before {
+    content: attr(data-ph);
+    color: #9ca3af;
+    pointer-events: none;
+  }
+  #ed table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 12px 0;
+  }
+  #ed td, #ed th {
+    border: 1px solid #6b7280;
+    padding: 8px 10px;
+    min-width: 40px;
+  }
+  #ed blockquote {
+    border-left: 4px solid #185abd;
+    margin: 10px 0;
+    padding: 6px 14px;
+    background: rgba(24, 90, 189, 0.06);
+    font-style: italic;
+  }
+  #ed hr.page-break {
+    border: none;
+    border-top: 2px dashed #9ca3af;
+    margin: 28px -40px;
+    position: relative;
+  }
+  #ed img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  /* Status Bar */
+  .status-bar {
+    background: var(--word-blue);
+    color: #ffffff;
+    height: 28px;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.76rem;
+    z-index: 20;
+  }
+
+  /* Print Styles */
+  @media print {
+    body {
+      background: #fff !important;
+      height: auto !important;
+      overflow: visible !important;
+    }
+    .no-print {
+      display: none !important;
+    }
+    .workspace {
+      padding: 0 !important;
+      overflow: visible !important;
+    }
+    .page-shell {
+      width: 100% !important;
+      min-height: auto !important;
+      box-shadow: none !important;
+      margin: 0 !important;
+      transform: none !important;
+    }
+    #ed hr.page-break {
+      page-break-after: always;
+      border: none;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .page-shell {
+      width: 100%;
+      min-height: 78vh;
+    }
+    #ed {
+      padding: 24px 18px !important;
+      min-height: 78vh;
+    }
+    .ruler-wrap {
+      display: none;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <!-- TOP TITLE BAR (MS Word Style) -->
+  <header class="no-print flex items-center justify-between px-3 py-1.5 text-white" style="background: var(--word-blue);">
+    <div class="flex items-center gap-2.5">
+      <div class="flex items-center gap-1.5 font-bold text-sm tracking-wide bg-white/15 px-2.5 py-1 rounded">
+        <i class="fa-solid fa-file-word text-base"></i>
+        <span>Word + कृतिदेव Studio</span>
+      </div>
+      <!-- Quick Access Icons -->
+      <button id="qa-save" class="hover:bg-white/20 p-1.5 rounded text-xs" title="Save as MS Word (.doc) [Ctrl+S]">
+        <i class="fa-solid fa-floppy-disk"></i>
+      </button>
+      <button data-c="undo" class="qa-cmd hover:bg-white/20 p-1.5 rounded text-xs" title="Undo (Ctrl+Z)">
+        <i class="fa-solid fa-rotate-left"></i>
+      </button>
+      <button data-c="redo" class="qa-cmd hover:bg-white/20 p-1.5 rounded text-xs" title="Redo (Ctrl+Y)">
+        <i class="fa-solid fa-rotate-right"></i>
+      </button>
+      <button id="qa-print" class="hover:bg-white/20 p-1.5 rounded text-xs" title="Print / Export PDF (Ctrl+P)">
+        <i class="fa-solid fa-print"></i>
+      </button>
+      <span class="text-white/40">|</span>
+      <input id="doc-title" type="text" value="मेरा_दस्तावेज़" class="bg-white/15 hover:bg-white/25 focus:bg-white focus:text-gray-900 text-white text-xs px-2.5 py-1 rounded outline-none w-40 sm:w-52 transition" title="Document File Name">
+    </div>
+
+    <div class="flex items-center gap-2">
+      <button id="btn-find-open" class="bg-white/15 hover:bg-white/25 px-2.5 py-1 rounded text-xs flex items-center gap-1.5" title="Find & Replace (Ctrl+H)">
+        <i class="fa-solid fa-magnifying-glass"></i> <span class="hidden sm:inline">खोजें / बदलें</span>
+      </button>
+      <button id="btn-pc-guide" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold px-2.5 py-1 rounded text-xs flex items-center gap-1.5 shadow-sm" title="PC में सॉफ्टवेयर की तरह कैसे चलाएँ">
+        <i class="fa-solid fa-desktop"></i> <span class="hidden md:inline">PC App कैसे बनाएँ</span>
+      </button>
+      <button id="btn-theme" class="bg-white/15 hover:bg-white/25 p-1.5 rounded text-xs" title="Dark / Light Mode">
+        <i class="fa-solid fa-moon" id="theme-icon"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- RIBBON TAB HEADERS -->
+  <nav class="no-print flex items-center gap-1 px-3 pt-1 border-b" style="background: var(--word-Blue); background-color: var(--word-ribbon); border-color: var(--bd);">
+    <button data-tab="file" class="tab-btn px-3.5 py-1.5 text-xs font-semibold rounded-t-md bg-amber-600 text-white hover:bg-amber-700 transition">
+      <i class="fa-solid fa-folder-open mr-1"></i> फ़ाइल (File)
+    </button>
+    <button data-tab="home" class="tab-btn active-tab px-3.5 py-1.5 text-xs font-semibold rounded-t-md border-b-2 border-blue-600 text-blue-600 bg-white/60 dark:bg-zinc-800">
+      होम (Home)
+    </button>
+    <button data-tab="insert" class="tab-btn px-3.5 py-1.5 text-xs font-semibold rounded-t-md hover:bg-black/5">
+      इन्सर्ट (Insert)
+    </button>
+    <button data-tab="layout" class="tab-btn px-3.5 py-1.5 text-xs font-semibold rounded-t-md hover:bg-black/5">
+      पेज लेआउट (Page Layout)
+    </button>
+    <button data-tab="kruti" class="tab-btn px-3.5 py-1.5 text-xs font-semibold rounded-t-md hover:bg-black/5 text-orange-700 dark:text-orange-400">
+      <i class="fa-solid fa-language mr-1"></i> कृतिदेव स्टूडियो
+    </button>
+    <div class="ml-auto flex items-center gap-2 pr-1">
+      <button id="toggle-ribbon" class="text-xs px-2 py-1 rounded hover:bg-black/10" title="Show/Hide Ribbon">
+        <i class="fa-solid fa-chevron-up" id="ribbon-chevron"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- RIBBON PANELS CONTAINER -->
+  <section id="ribbon-body" class="no-print border-b overflow-x-auto" style="background: var(--word-ribbon); border-color: var(--bd);">
+    
+    <!-- 1. FILE TAB PANEL -->
+    <div id="panel-file" class="ribbon-panel hidden flex items-stretch px-2 py-1 min-w-max">
+      <div class="ribbon-group">
+        <div class="ribbon-group-content">
+          <button id="file-new" class="ribbon-btn ribbon-btn-lg">
+            <i class="fa-regular fa-file text-blue-600"></i>
+            <span>नया (New)</span>
+          </button>
+          <button id="file-open-btn" class="ribbon-btn ribbon-btn-lg">
+            <i class="fa-regular fa-folder-open text-amber-600"></i>
+            <span>खोलें (Open)</span>
+          </button>
+          <input type="file" id="file-open-input" accept=".html,.htm,.txt,.doc" class="hidden">
+        </div>
+        <div class="ribbon-group-label">दस्तावेज़</div>
+      </div>
+
+      <div class="ribbon-group">
+        <div class="ribbon-group-content">
+          <button id="file-save-doc" class="ribbon-btn ribbon-btn-lg">
+            <i class="fa-solid fa-file-word text-blue-700"></i>
+            <span>Save .DOC (Word)</span>
+          </button>
+          <button id="file-save-html" class="ribbon-btn ribbon-btn-lg">
+            <i class="fa-solid fa-code text-emerald-600"></i>
+            <span>Save .HTML</span>
+          </button>
+          <button id="file-save-txt" class="ribbon-btn ribbon-btn-lg">
+            <i class="fa-regular fa-file-lines text-slate-600"></i>
+            <span>Save .TXT</span>
+          </button>
+        </div>
+        <div class="ribbon-group-label">कंप्यूटर में सेव करें (Download)</div>
+      </div>
+
+      <div class="ribbon-group">
+        <div class="ribbon-group-content">
+          <button id="file-print" class="ribbon-btn ribbon-btn-lg">
+            <i class="fa-solid fa-print text-purple-600"></i>
+            <span>प्रिंट / Save PDF</span>
+          </button>
+        </div>
+        <div class="ribbon-group-label">प्रिंट और PDF</div>
+      </div>
+
+      <div class="ribbon-group border-r-0">
+        <div class="ribbon-group-content">
+          <button id="file-template-letter" class="ribbon-btn">
+            <i class="fa-solid fa-envelope-open-text text-orange-600"></i> सरकारी पत्र टेम्पलेट
+          </button>
+          <button id="file-template-app" class="ribbon-btn">
+            <i class="fa-solid fa-file-signature text-teal-600"></i> प्रार्थना-पत्र (Application)
+          </button>
+        </div>
+        <div class="ribbon-group-label">रेडीमेड हिंदी टेम्पलेट</div>
+      </div>
+    </div>
+
+    <!-- 2. HOME TAB PANEL (Default Active) -->
+    <div id="panel-home" class="ribbon-panel flex items-stretch px-2 py-1 min-w-max" id="tb">
+      <!-- Clipboard -->
+      <div class="ribbon-group">
+        <div class="ribbon-group-content">
+          <button id="btn-paste" class="ribbon-btn ribbon-btn-lg" title="Paste">
+            <i class="fa-regular fa-paste text-amber-600"></i>
+            <span>Paste</span>
+          </button>
+          <div class="flex flex-col gap-1">
+            <button data-c="cut" class="ribbon-btn !py-0.5 !min-h-[24px]" title="Cut (Ctrl+X)">
+              <i class="fa-solid fa-scissors text-xs"></i> Cut
+            </button>
+            <button data-c="copy" class="ribbon-btn !py-0.5 !min-h-[24px]" title="Copy (Ctrl+C)">
+              <i class="fa-regular fa-copy text-xs"></i> Copy
+            </button>
+          </div>
+        </div>
+        <div class="ribbon-group-label">क्लिपबोर्ड</div>
+      </div>
+
+      <!-- Font Family & Size & Formatting -->
+      <div class="ribbon-group">
+        <div class="ribbon-group-content flex-col !items-start gap-1.5">
+          <div class="flex items-center gap-1.5">
+            <select id="ff" class="ribbon-select w-40" title="Font Family">
+              <option value="Kruti Dev 010">Kruti Dev 010</option>
+              <option value="Devlys 010">Devlys 010</option>
+              <option value="Noto Sans Devanagari" selected>Noto Sans Devanagari</option>
+              <option value="Mangal">Mangal (मंगल)</option>
+              <option value="Arial">Arial</option>
+              <option value="Calibri">Calibri</option>
+              <option value="Times New Roman">Times New Roman</option>
+              <option value="Courier New">Courier New</option>
+              <option value="Georgia">Georgia</option>
+              <option value="Verdana">Verdana</option>
+            </select>
+
+            <select id="fs" class="ribbon-select w-16" title="Font Size (px)">
+              <option>10</option>
+              <option>12</option>
+              <option>14</option>
+              <option>16</option>
+              <option selected>18</option>
+              <option>20</option>
+              <option>22</option>
+              <option>24</option>
+              <option>28</option>
+              <option>32</option>
+              <option>36</option>
+              <option>48</option>
+              <option>64</option>
+            </select>
+
+            <button id="font-grow" class="ribbon-btn" title="Grow Font Size"><b>A</b><span class="text-[10px]">▲</span></button>
+            <button id="font-shrink" class="ribbon-btn" title="Shrink Font Size"><b>A</b><span class="text-[10px]">▼</span></button>
+            <button data-c="removeFormat" class="ribbon-btn" title="Clear Formatting">
+              <i class="fa-solid fa-eraser text-rose-600"></i>
+            </button>
+          </div>
+
+          <div class="flex items-center gap-1">
+            <button data-c="bold" class="ribbon-btn w-8 font-bold" title="Bold (Ctrl+B)">B</button>
+            <button data-c="italic" class="ribbon-btn w-8 italic font-serif" title="Italic (Ctrl+I)">I</button>
+            <button data-c="underline" class="ribbon-btn w-8 underline" title="Underline (Ctrl+U)">U</button>
+            <button data-c="strikeThrough" class="ribbon-btn w-8 line-through" title="Strikethrough">S</button>
+            <button data-c="subscript" class="ribbon-btn w-8" title="Subscript">X<sub>2</sub></button>
+            <button data-c="superscript" class="ribbon-btn w-8" title="Superscript">X<sup>2</sup></button>
+
+            <span class="w-px h-5 bg-gray-300 dark:bg-zinc-600 mx-1"></span>
+
+            <label class="ribbon-btn cursor-pointer gap-1" title="Text Color">
+              <i class="fa-solid fa-font text-red-600"></i>
+              <input type="color" id="fc" value="#000000" class="w-5 h-5 border-0 p-0 bg-transparent cursor-pointer">
+            </label>
+            <label class="ribbon-btn cursor-pointer gap-1" title="Highlight Color">
+              <i class="fa-solid fa-highlighter text-yellow-500"></i>
+              <input type="color" id="hc" value="#ffff00" class="w-5 h-5 border-0 p-0 bg-transparent cursor-pointer">
+            </label>
+          </div>
+        </div>
+        <div class="ribbon-group-label">फ़ॉन्ट (Font)</div>
+      </div>
+
+      <!-- Paragraph & Alignment -->
+      <div class="ribbon-group">
+        <div class="ribbon-group-content flex-col !items-start gap-1.5">
+          <div class="flex items-center gap-1">
+            <button data-c="insertUnorderedList" class="ribbon-btn" title="Bullet List">
+              <i class="fa-solid fa-list-ul"></i>
+            </button>
+            <button data-c="insertOrderedList" class="ribbon-btn" title="Numbered List">
+              <i class="fa-solid fa-list-ol"></i>
+            </button>
+            <button data-c="outdent" class="ribbon-btn" title="Decrease Indent">
+              <i class="fa-solid fa-outdent"></i>
+            </button>
+            <button data-c="indent" class="ribbon-btn" title="Increase Indent">
+              <i class="fa-solid fa-indent"></i>
+            </button>
+            <select id="line-spacing" class="ribbon-select ml-1" title="Line Spacing">
+              <option value="1.2">↕ 1.0</option>
+              <option value="1.45">↕ 1.15</option>
+              <option value="1.65" selected>↕ 1.5</option>
+              <option value="2.0">↕ 2.0</option>
+              <option value="2.4">↕ 2.5</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-1">
+            <button data-c="justifyLeft" class="ribbon-btn" title="Align Left (Ctrl+L)">
+              <i class="fa-solid fa-align-left"></i>
+            </button>
+            <button data-c="justifyCenter" class="ribbon-btn" title="Align Center (Ctrl+E)">
+              <i class="fa-solid fa-align-center"></i>
+            </button>
+            <button data-c="justifyRight" class="ribbon-btn" title="Align Right (Ctrl+R)">
+              <i class="fa-solid fa-align-right"></i>
+            </button>
+            <button data-c="justifyFull" class="ribbon-btn" title="Justify (Ctrl+J)">
+              <i class="fa-solid fa-align-justify"></i>
+            </button>
+          </div>
+        </div>
+        <div class="ribbon-group-label">पैराग्राफ (Paragraph)</div>
+      </div>
+
+      <!-- Quick Styles -->
+      <div class="ribbon-group">
+        <div class="ribbon-group-content gap-1.5">
+          <button data-block="p" class="style-btn ribbon-btn flex-col !px-2.5 !py-1 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800">
+            <span class="text-xs font-normal">Normal</span>
+            <span class="text-[10px] opacity-60">सामान्य</span>
+          </button>
+          <button data-block="h1" class="style-btn ribbon-btn flex-col !px-2.5 !py-1 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800">
+            <span class="text-xs font-bold text-blue-700 dark:text-blue-400">Heading 1</span>
+            <span class="text-[10px] opacity-60">शीर्षक 1</span>
+          </button>
+          <button data-block="h2" class="style-btn ribbon-btn flex-col !px-2.5 !py-1 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800">
+            <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Heading 2</span>
+            <span class="text-[10px] opacity-60">शीर्षक 2</span>
+          </button>
+          <button data-block="blockquote" class="style-btn ribbon-btn flex-col !px-2.5 !py-1 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800">
+            <span class="text-xs italic">Quote</span>
+            <span class="text-[10px] opacity-60">उद्धरण</span>
+          </button>
+        </div>
+        <div class="ribbon-group-label">स्टाइल्स (Styles)</div>
+      </div>
+
+      <!-- Editing -->
+      <div class="ribbon-group border-r-0">
+        <div class="ribbon-group-content">
+          <button id="btn-find-ribbon" class="ribbon-btn ribbon-btn-lg">
+            <i class="fa-solid fa-magnifying-glass-arrow-right text-blue-600"></i>
+            <span>Find / Replace</span>
+          </button>
+          <button id="btn-select-all" class="ribbon-btn ribbon-btn-lg">
+            <i class="fa-solid fa-object-group text-indigo-600"></i>
+            <span>Select All</span>
+          </button>
+        </div>
+        <div class="ribbon-group-label">एडिटिंग</div>
+      </div>
+    </div>
+
+    <!-- 3. INSERT TAB PANEL -->
+    <div id="panel-insert" class="ribbon-panel hidden flex items-stretch px-2 py-1 min-w-max">
+      <div class="ribbon-group">
+        <div class="ribbon-group-content">
+          <button id="ins-page-break" class="ribbon-btn ribbon-btn-lg">
+            <i class="fa-solid fa-file-export text-blue-600"></i>
+            <span>Page Break</span>
+          </button>
+          <button id="ins-hr" class="ribbon-btn ribbon-btn-lg">
+            <i class="fa-solid fa-minus text-gray-600"></i>
+            <span>डिवाइडर लाइन</span>
+          </button>
+        </div>
+        <div class="ribbon-group-label">पेज</div>
+      </div>
+
+      <div class="ribbon-group">
+        <div class="ribbon-group-content">
+          <button id="ins-table-btn" class="ribbon-btn ribbon-btn-lg">
+            <i class="fa-solid fa-table-cells text-emerald-600"></i>
+            <span>टेबल (Table)</span>
+          </button>
+        </div>
+        <div class="ribbon-group-label">टेबल्स</div>
+      </div>
+
+      <div class="ribbon-group">
+        <div class="ribbon-group-content">
+          <button id="ins-img-btn" class="ribbon-btn ribbon-btn-lg">
+            <i class="fa-regular fa-image text-purple-600"></i>
+            <span>फोटो जोड़ें (PC)</span>
+          </button>
+          <input type="file" id="ins-img-input" accept="image/*" class="hidden">
+          <button id="ins-box-btn" class="ribbon-btn ribbon-btn-lg">
+            <i class="fa-regular fa-square-plus text-amber-600"></i>
+            <span>सूचना बॉक्स</span>
+          </button>
+        </div>
+        <div class="ribbon-group-label">चित्र और बॉक्स</div>
+      </div>
+
+      <div class="ribbon-group">
+        <div class="ribbon-group-content">
+          <button id="ins-link-btn" class="ribbon-btn ribbon-btn-lg">
+            <i class="fa-solid fa-link text-blue-600"></i>
+            <span>लिंक (Link)</span>
+          </button>
+          <button id="ins-date-btn" class="ribbon-btn ribbon-btn-lg">
+            <i class="fa-regular fa-calendar-check text-teal-600"></i>
+            <span>दिनांक / समय</span>
+          </button>
+        </div>
+        <div class="ribbon-group-label">लिंक और दिनांक</div>
+      </div>
+
+      <div class="ribbon-group border-r-0">
+        <div class="ribbon-group-content gap-1 max-w-md">
+          <span class="text-xs text-gray-500 mr-1">हिंदी चिह्न:</span>
+          <button class="sym-btn ribbon-btn font-bold">ॐ</button>
+          <button class="sym-btn ribbon-btn font-bold">श्री</button>
+          <button class="sym-btn ribbon-btn font-bold">₹</button>
+          <button class="sym-btn ribbon-btn font-bold">।</button>
+          <button class="sym-btn ribbon-btn font-bold">॥</button>
+          <button class="sym-btn ribbon-btn">क्ष</button>
+          <button class="sym-btn ribbon-btn">त्र</button>
+          <button class="sym-btn ribbon-btn">ज्ञ</button>
+          <button class="sym-btn ribbon-btn">श्र</button>
+          <button class="sym-btn ribbon-btn">क्र</button>
+          <button class="sym-btn ribbon-btn">द्व</button>
+          <button class="sym-btn ribbon-btn">द्य</button>
+        </div>
+        <div class="ribbon-group-label">विशेष अक्षर (Click to Insert)</div>
+      </div>
+    </div>
+
+    <!-- 4. PAGE LAYOUT TAB PANEL -->
+    <div id="panel-layout" class="ribbon-panel hidden flex items-stretch px-2 py-1 min-w-max">
+      <div class="ribbon-group">
+        <div class="ribbon-group-content gap-2">
+          <div>
+            <label class="block text-[11px] opacity-70 mb-0.5">पेज साइज़ (Size)</label>
+            <select id="page-size" class="ribbon-select">
+              <option value="a4" selected>A4 (210 × 297 mm)</option>
+              <option value="letter">Letter (8.5 × 11 in)</option>
+              <option value="legal">Legal (8.5 × 14 in)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] opacity-70 mb-0.5">ओरिएंटेशन (Orientation)</label>
+            <select id="page-orient" class="ribbon-select">
+              <option value="portrait" selected>Portrait (खड़ा पेज)</option>
+              <option value="landscape">Landscape (आड़ा पेज)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] opacity-70 mb-0.5">मार्जिन (Margins)</label>
+            <select id="page-margin" class="ribbon-select">
+              <option value="72px" selected>Normal (1 इंच)</option>
+              <option value="38px">Narrow (0.5 इंच)</option>
+              <option value="54px">Moderate (0.75 इंच)</option>
+              <option value="96px">Wide (1.3 इंच)</option>
+            </select>
+          </div>
+        </div>
+        <div class="ribbon-group-label">पेज सेटअप (Page Setup)</div>
+      </div>
+
+      <div class="ribbon-group">
+        <div class="ribbon-group-content gap-2">
+          <div>
+            <label class="block text-[11px] opacity-70 mb-0.5">पेज बॉर्डर (Border)</label>
+            <select id="page-border" class="ribbon-select">
+              <option value="none" selected>कोई बॉर्डर नहीं</option>
+              <option value="border-box">सादा बॉक्स बॉर्डर</option>
+              <option value="border-double">डबल लाइन बॉर्डर</option>
+              <option value="border-dashed">डैश (Dashed) बॉर्डर</option>
+              <option value="border-gold">गोल्डन फ्रेम बॉर्डर</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] opacity-70 mb-0.5">वॉटरमार्क (Watermark)</label>
+            <select id="page-watermark" class="ribbon-select">
+              <option value="" selected>कोई वॉटरमार्क नहीं</option>
+              <option value="गोपनीय">गोपनीय (CONFIDENTIAL)</option>
+              <option value="ड्राफ्ट / DRAFT">ड्राफ्ट (DRAFT)</option>
+              <option value="नमूना प्रति">नमूना प्रति (SAMPLE)</option>
+              <option value="अति महत्वपूर्ण">अति महत्वपूर्ण (URGENT)</option>
+            </select>
+          </div>
+          <div class="flex flex-col items-center">
+            <label class="block text-[11px] opacity-70 mb-0.5">पेज रंग</label>
+            <input type="color" id="page-color" value="#ffffff" class="w-9 h-7 rounded border cursor-pointer">
+          </div>
+        </div>
+        <div class="ribbon-group-label">पेज बैकग्राउंड और बॉर्डर</div>
+      </div>
+
+      <div class="ribbon-group border-r-0">
+        <div class="ribbon-group-content">
+          <button id="cols-1" class="ribbon-btn ribbon-btn-lg active">
+            <i class="fa-solid fa-align-justify"></i>
+            <span>1 कॉलम</span>
+          </button>
+          <button id="cols-2" class="ribbon-btn ribbon-btn-lg">
+            <i class="fa-solid fa-table-columns"></i>
+            <span>2 कॉलम</span>
+          </button>
+        </div>
+        <div class="ribbon-group-label">कॉलम (Columns)</div>
+      </div>
+    </div>
+
+    <!-- 5. KRUTI DEV STUDIO TAB PANEL -->
+    <div id="panel-kruti" class="ribbon-panel hidden flex items-stretch px-2 py-1 min-w-max">
+      <div class="ribbon-group">
+        <div class="ribbon-group-content gap-2">
+          <button id="kd-conv-sel" class="ribbon-btn ribbon-btn-lg">
+            <i class="fa-solid fa-wand-magic-sparkles text-orange-600"></i>
+            <span>चुना हुआ बदलें (Selected)</span>
+          </button>
+          <button id="kd-conv-all-tab" class="ribbon-btn ribbon-btn-lg">
+            <i class="fa-solid fa-bolt text-amber-600"></i>
+            <span>पूरा पेज कृतिदेव करें</span>
+          </button>
+        </div>
+        <div class="ribbon-group-label">कन्वर्टर एक्शन</div>
+      </div>
+
+      <div class="ribbon-group border-r-0">
+        <div class="ribbon-group-content text-xs gap-3 px-2">
+          <div class="bg-amber-500/10 border border-amber-500/30 rounded px-3 py-1.5 leading-relaxed">
+            <b>कैसे काम करता है:</b> नीचे दिए गए <b>Auto कृतिदेव</b> बार में टिक रहने पर आप जैसे ही Google Hindi Input या मंगळ (Unicode) में कोई शब्द लिखकर <b>Space</b> दबाएँगे, वह तुरंत <b>Kruti Dev 010 / Devlys 010</b> में बदल जाएगा!
+          </div>
+          <button id="btn-kd-chart" class="ribbon-btn ribbon-btn-lg">
+            <i class="fa-regular fa-keyboard text-blue-600"></i>
+            <span>कृतिदेव शॉर्टकट चार्ट</span>
+          </button>
+        </div>
+        <div class="ribbon-group-label">कृतिदेव सहायता</div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- PINNED KRUTI DEV BAR (Exact controls from user's HTML always accessible) -->
+  <div class="kd-bar no-print">
+    <label class="flex items-center gap-1.5 text-xs sm:text-sm font-medium cursor-pointer">
+      <input type="checkbox" id="auto" checked class="w-4 h-4 accent-orange-600 cursor-pointer">
+      <span>Auto कृतिदेव (space दबाने पर)</span>
+    </label>
+    <select id="cf" title="Convert to">
+      <option value="Kruti Dev 010">Kruti Dev 010</option>
+      <option value="Devlys 010">Devlys 010</option>
+    </select>
+    <button id="all" title="दस्तावेज़ का सारा यूनिकोड हिंदी कृतिदेव में बदलें">सब convert करो</button>
+    <button class="p" id="cp" title="पूरा टेक्स्ट कन्वर्ट करके MS Word में पेस्ट करने के लिए कॉपी करें">
+      <i class="fa-regular fa-copy mr-1"></i>Word के लिए Copy
+    </button>
+    <button id="nw" title="नया खाली पेज">नया पेज</button>
+    <span id="msg" class="text-xs sm:text-sm font-semibold text-orange-600 dark:text-orange-400 ml-1"></span>
+  </div>
+
+  <!-- MAIN WORKSPACE WITH RULER & A4 PAGE -->
+  <main class="workspace" id="workspace">
+    <!-- Horizontal MS Word Ruler -->
+    <div class="ruler-wrap no-print">
+      <div class="ruler" id="ruler-ticks"></div>
+    </div>
+
+    <!-- Page Canvas -->
+    <div class="page-shell" id="page-shell">
+      <div class="watermark-layer">
+        <div class="watermark-text" id="watermark-display"></div>
+      </div>
+      <div id="ed" contenteditable="true" spellcheck="false" data-ph="यहाँ Google Hindi Input से टाइप करें… (हर शब्द के बाद space दबाते ही कृतिदेव में बदल जाएगा, या MS Word की तरह फ़ॉर्मेटिंग करें)"></div>
+    </div>
+  </main>
+
+  <!-- BOTTOM STATUS BAR (MS Word Style) -->
+  <footer class="status-bar no-print">
+    <div class="flex items-center gap-4">
+      <span id="st">0 शब्द · 0 अक्षर · अपने-आप सेव</span>
+      <span class="hidden sm:inline opacity-80" id="page-info">पृष्ठ: 1 | मोड: Kruti Dev + Word</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="zoom-out" class="hover:bg-white/20 px-1.5 rounded" title="Zoom Out">-</button>
+      <input type="range" id="zoom-slider" min="60" max="160" value="100" class="w-24 accent-white cursor-pointer">
+      <button id="zoom-in" class="hover:bg-white/20 px-1.5 rounded" title="Zoom In">+</button>
+      <button id="zoom-val" class="hover:bg-white/20 px-1.5 py-0.5 rounded text-xs font-mono">100%</button>
+    </div>
+  </footer>
+
+  <!-- MODAL: INSERT TABLE / LINK / NEW CONFIRM / FIND & REPLACE / PC INSTALL GUIDE -->
+  <div id="modal-backdrop" class="no-print fixed inset-0 bg-black/50 backdrop-blur-xs hidden items-center justify-center z-50 p-4">
+    <div class="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-xl shadow-2xl max-w-md w-full p-5 text-sm">
+      <div class="flex items-center justify-between pb-3 border-b border-gray-200 dark:border-zinc-700">
+        <h3 id="modal-title" class="font-bold text-base">विकल्प</h3>
+        <button id="modal-close" class="p-1 rounded hover:bg-gray-200 dark:hover:bg-zinc-800">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div id="modal-body" class="py-4 space-y-3"></div>
+      <div id="modal-footer" class="flex justify-end gap-2 pt-2 border-t border-gray-200 dark:border-zinc-700"></div>
+    </div>
+  </div>
+
+<script>
+/* ============================================================================
+   1. EXACT USER KRUTI DEV 010 / DEVLYS 010 CONVERSION ENGINE
+   ============================================================================ */
+const H='\u094D',N='\u093C';
+const NUK={'\u0958':'क\u093C','\u0959':'ख\u093C','\u095A':'ग\u093C','\u095B':'ज\u093C','\u095C':'ड\u093C','\u095D':'ढ\u093C','\u095E':'फ\u093C','\u095F':'य\u093C'};
+const SP=[['क्ष','\uE000'],['त्र','\uE001'],['ज्ञ','\uE002'],['श्र','\uE003'],['क्र','\uE004']];
+const F={'क':'d','ख':'[k','ग':'x','घ':'?k','ङ':'³','च':'p','छ':'N','ज':'t','झ':'>','ञ':'¥','ट':'V','ठ':'B','ड':'M','ढ':'<','ण':'.k','त':'r','थ':'Fk','द':'n','ध':'/k','न':'u','प':'i','फ':'Q','ब':'c','भ':'Hk','म':'e','य':';','र':'j','ल':'y','व':'o','श':"'k",'ष':'"k','स':'l','ह':'g','\uE000':'{k','\uE001':'=','\uE002':'K','\uE003':'J','\uE004':'Ø'};
+const HF={'क':'D','ख':'[','ग':'X','घ':'?','च':'P','ज':'T','ण':'.','त':'R','थ':'F','ध':'/','न':'U','प':'I','फ':'¶','ब':'C','भ':'H','म':'E','य':'¸','ल':'Y','व':'O','श':"'",'ष':'"','स':'L','\uE000':'{'};
+const VW={'अ':'v','आ':'vk','इ':'b','ई':'bZ','उ':'m','ऊ':'Å','ऋ':'_','ए':',','ऐ':',s','ओ':'vks','औ':'vkS','ऑ':'vkW'};
+const MT={'ा':'k','ी':'h','ु':'q','ू':'w','ृ':'`','े':'s','ै':'S','ो':'ks','ौ':'kS','ॉ':'kW','ॅ':'W'};
+const BD={'ं':'a','ँ':'¡','ः':'%'};
+const isC=c=>c!==undefined&&Object.prototype.hasOwnProperty.call(F,c);
+
+function cluster(parts,fh){
+  let g='';
+  for(let k=0;k<parts.length;k++){
+    const p=parts[k];
+    if(k>0&&p.ch==='र'){g+='टठडढ'.includes(parts[k-1].ch)?'ª':'z';continue}
+    const nx=parts[k+1];
+    let s=(nx&&nx.ch!=='र')?(HF[p.ch]||F[p.ch]+'~'):F[p.ch];
+    if(p.nk)s+='+';
+    if(!nx&&fh)s=F[p.ch]+(p.nk?'+':'')+'~';
+    g+=s;
+  }
+  return g;
+}
+
+function convert(src){
+  let u=src.replace(/[\u200c\u200d]/g,'').replace(/[\u0958-\u095F]/g,c=>NUK[c]);
+  for(const [a,b] of SP)u=u.split(a).join(b);
+  let out='',i=0;
+  while(i<u.length){
+    const c=u[i];
+    if(isC(c)){
+      let reph=false;
+      if(c==='र'&&u[i+1]===H&&isC(u[i+2])){reph=true;i+=2}
+      const parts=[];
+      while(true){
+        const ch=u[i];i++;
+        let nk=false;if(u[i]===N){nk=true;i++}
+        parts.push({ch,nk});
+        if(u[i]===H&&isC(u[i+1])){i++;continue}
+        break;
+      }
+      let fh=false;if(u[i]===H){fh=true;i++}
+      let m='';if(u[i]==='ि'||MT[u[i]]){m=u[i];i++}
+      let b='';if(BD[u[i]]){b=BD[u[i]];i++}
+      out+=(m==='ि'?'f':'')+cluster(parts,fh)+(m&&m!=='ि'?MT[m]:'')+(reph?'Z':'')+b;
+    }else if(VW[c]){out+=VW[c];i++}
+    else if(BD[c]){out+=BD[c];i++}
+    else if(MT[c]){out+=MT[c];i++}
+    else if(c==='ि'){out+='f';i++}
+    else if(c===H||c===N){i++}
+    else if(c==='।'){out+='A';i++}
+    else if(c==='॥'){out+='AA';i++}
+    else if(c>='\u0966'&&c<='\u096F'){out+=String(c.charCodeAt(0)-0x966);i++}
+    else{out+=c;i++}
+  }
+  return out;
+}
+
+const $=id=>document.getElementById(id),ed=$('ed'),msg=$('msg');
+
+function flash(t){
+  msg.textContent=t;
+  setTimeout(()=>{if(msg.textContent===t)msg.textContent=''},2600);
+}
+
+function save(){
+  try{localStorage.setItem('kd-doc',ed.innerHTML)}catch(e){}
+  const t=ed.innerText.trim();
+  const words=t?t.split(/\s+/).length:0;
+  const pages=Math.max(1,Math.ceil(ed.scrollHeight/1056));
+  $('st').textContent=words+' शब्द · '+t.length+' अक्षर · अपने-आप सेव ✓';
+  $('page-info').textContent='पृष्ठ: '+pages+' | फ़ॉन्ट: '+$('cf').value;
+}
+
+function conv(force){
+  const sel=getSelection();let mk=null;
+  if(!force&&sel.rangeCount&&ed.contains(sel.anchorNode)){
+    mk=document.createElement('i');
+    const r=sel.getRangeAt(0).cloneRange();
+    r.collapse(false);
+    r.insertNode(mk);
+  }
+  const w=document.createTreeWalker(ed,NodeFilter.SHOW_TEXT),ns=[];
+  while(w.nextNode())ns.push(w.currentNode);
+  for(const n of ns){
+    const t=n.data,re=/[\u0900-\u097F\u200c\u200d]+/g,runs=[];let m;
+    while((m=re.exec(t)))runs.push([m.index,m.index+m[0].length]);
+    for(let k=runs.length-1;k>=0;k--){
+      const [s,e]=runs[k];
+      if(mk&&e===t.length&&n.nextSibling===mk)continue;
+      const r=document.createRange();r.setStart(n,s);r.setEnd(n,e);
+      const txt=convert(r.toString());r.deleteContents();
+      const sp=document.createElement('span');
+      sp.style.fontFamily="'"+$('cf').value+"',monospace";
+      sp.textContent=txt;
+      r.insertNode(sp);
+    }
+  }
+  if(mk){
+    const r=document.createRange();
+    r.setStartBefore(mk);
+    r.collapse(true);
+    mk.remove();
+    ed.normalize();
+    sel.removeAllRanges();
+    sel.addRange(r);
+  }
+  save();
+}
+
+ed.addEventListener('input',e=>{
+  if(e.isComposing){save();return}
+  if($('auto').checked&&(!e.data||!/^[\u0900-\u097F]+$/.test(e.data)))conv(false);
+  else save();
+});
+ed.addEventListener('compositionend',()=>setTimeout(()=>{if($('auto').checked)conv(false)},0));
+
+$('all').onclick=()=>{conv(true);flash('सब convert हो गया ✓')};
+$('kd-conv-all-tab').onclick=()=>{conv(true);flash('पूरा पेज कृतिदेव में बदल गया ✓')};
+
+$('kd-conv-sel').onclick=()=>{
+  const sel=getSelection();
+  if(!sel.rangeCount||sel.isCollapsed){flash('पहले कुछ हिंदी टेक्स्ट सेलेक्ट करें!');return;}
+  const txt=sel.toString();
+  const converted=convert(txt);
+  document.execCommand('insertHTML',false,`<span style="font-family:'${$('cf').value}',monospace">${converted}</span>`);
+  save();
+  flash('चुना हुआ टेक्स्ट बदल गया ✓');
+};
+
+$('cp').onclick=()=>{
+  conv(true);
+  ed.focus();
+  const s=getSelection(),r=document.createRange();
+  r.selectNodeContents(ed);
+  s.removeAllRanges();
+  s.addRange(r);
+  let ok=false;
+  try{ok=document.execCommand('copy')}catch(e){}
+  flash(ok?'Copy हो गया, अब MS Word में Paste (Ctrl+V) करें ✓':'Text select है, Ctrl+C दबाएँ');
+};
+
+/* ============================================================================
+   2. SELECTION RESTORE & RICH TEXT COMMAND ENGINE
+   ============================================================================ */
+let saved=null;
+document.addEventListener('selectionchange',()=>{
+  const s=getSelection();
+  if(s.rangeCount&&ed.contains(s.anchorNode))saved=s.getRangeAt(0).cloneRange();
+});
+
+function restore(){
+  ed.focus();
+  if(saved){
+    const s=getSelection();
+    s.removeAllRanges();
+    s.addRange(saved);
+  }
+}
+
+function ex(c,v){
+  restore();
+  document.execCommand('styleWithCSS',false,true);
+  document.execCommand(c,false,v||null);
+  ed.focus();
+  save();
+}
+
+// Prevent focus loss when clicking toolbar buttons
+document.querySelectorAll('.ribbon-panel, header').forEach(bar=>{
+  bar.addEventListener('mousedown',e=>{
+    if(e.target.closest('button'))e.preventDefault();
+  });
+});
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button[data-c]');
+  if(b)ex(b.dataset.c);
+});
+
+$('ff').onchange=()=>ex('fontName',$('ff').value);
+
+function applyFontSize(px){
+  restore();
+  document.execCommand('styleWithCSS',false,false);
+  document.execCommand('fontSize',false,'7');
+  ed.querySelectorAll('font[size="7"]').forEach(f=>{
+    f.removeAttribute('size');
+    f.style.fontSize=px+'px';
+  });
+  save();
+}
+
+$('fs').onchange=()=>applyFontSize($('fs').value);
+$('font-grow').onclick=()=>{
+  let cur=parseInt($('fs').value,10)||18;
+  cur=Math.min(72,cur+2);
+  $('fs').value=String(cur);
+  applyFontSize(cur);
+};
+$('font-shrink').onclick=()=>{
+  let cur=parseInt($('fs').value,10)||18;
+  cur=Math.max(10,cur-2);
+  $('fs').value=String(cur);
+  applyFontSize(cur);
+};
+
+$('fc').oninput=()=>ex('foreColor',$('fc').value);
+$('hc').oninput=()=>ex('hiliteColor',$('hc').value);
+
+$('line-spacing').onchange=()=>{
+  ed.style.lineHeight=$('line-spacing').value;
+  flash('लाइन स्पेसिंग अपडेट हो गई');
+};
+
+document.querySelectorAll('.style-btn').forEach(btn=>{
+  btn.onclick=()=>ex('formatBlock',btn.dataset.block);
+});
+
+$('btn-select-all').onclick=()=>{
+  ed.focus();
+  document.execCommand('selectAll',false,null);
+};
+
+$('btn-paste').onclick=async()=>{
+  restore();
+  try{
+    const text=await navigator.clipboard.readText();
+    if(text)document.execCommand('insertText',false,text);
+  }catch(e){
+    flash('पेस्ट करने के लिए कीबोर्ड से Ctrl+V दबाएँ');
+  }
+};
+
+/* ============================================================================
+   3. RIBBON TABS & RULER GENERATOR
+   ============================================================================ */
+const tabBtns=document.querySelectorAll('.tab-btn');
+const panels={
+  file:$('panel-file'),
+  home:$('panel-home'),
+  insert:$('panel-insert'),
+  layout:$('panel-layout'),
+  kruti:$('panel-kruti')
+};
+
+tabBtns.forEach(btn=>{
+  btn.onclick=()=>{
+    const target=btn.dataset.tab;
+    tabBtns.forEach(b=>{
+      b.classList.remove('active-tab','border-b-2','border-blue-600','text-blue-600','bg-white/60','dark:bg-zinc-800');
+    });
+    if(target!=='file'){
+      btn.classList.add('active-tab','border-b-2','border-blue-600','text-blue-600','bg-white/60','dark:bg-zinc-800');
+    }
+    Object.keys(panels).forEach(k=>{
+      panels[k].classList.toggle('hidden',k!==target);
+    });
+    $('ribbon-body').classList.remove('hidden');
+  };
+});
+
+$('toggle-ribbon').onclick=()=>{
+  const rb=$('ribbon-body');
+  rb.classList.toggle('hidden');
+  $('ribbon-chevron').className=rb.classList.contains('hidden')?'fa-solid fa-chevron-down':'fa-solid fa-chevron-up';
+};
+
+// Build Horizontal Ruler
+function buildRuler(){
+  const r=$('ruler-ticks');
+  r.innerHTML='';
+  for(let i=0;i<=8;i++){
+    const seg=document.createElement('div');
+    seg.style.flex='1';
+    seg.style.height='100%';
+    seg.style.borderRight='1px solid var(--bd)';
+    seg.style.position='relative';
+    seg.style.paddingLeft='3px';
+    seg.textContent=i>0?i:'';
+    r.appendChild(seg);
+  }
+}
+buildRuler();
+
+/* ============================================================================
+   4. MODAL DIALOG HELPER (NO ALERT/CONFIRM USED)
+   ============================================================================ */
+function openModal(title,bodyHTML,buttons){
+  $('modal-title').textContent=title;
+  $('modal-body').innerHTML=bodyHTML;
+  const foot=$('modal-footer');
+  foot.innerHTML='';
+  buttons.forEach(b=>{
+    const btn=document.createElement('button');
+    btn.className=b.primary
+      ?'px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs'
+      :'px-3 py-1.5 rounded-lg border border-gray-300 dark:border-zinc-700 hover:bg-gray-100 dark:hover:bg-zinc-800 text-xs';
+    btn.textContent=b.label;
+    btn.onclick=()=>b.onClick();
+    foot.appendChild(btn);
+  });
+  $('modal-backdrop').classList.remove('hidden');
+  $('modal-backdrop').classList.add('flex');
+}
+
+function closeModal(){
+  $('modal-backdrop').classList.add('hidden');
+  $('modal-backdrop').classList.remove('flex');
+}
+$('modal-close').onclick=closeModal;
+
+/* ============================================================================
+   5. INSERT TAB FEATURES (TABLES, IMAGES, LINKS, SYMBOLS, TEMPLATES)
+   ============================================================================ */
+$('ins-page-break').onclick=()=>{
+  restore();
+  document.execCommand('insertHTML',false,'<hr class="page-break"><p><br></p>');
+  save();
+};
+
+$('ins-hr').onclick=()=>{
+  restore();
+  document.execCommand('insertHorizontalRule',false,null);
+  save();
+};
+
+$('ins-table-btn').onclick=()=>{
+  openModal('टेबल जोड़ें (Insert Table)',`
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <label class="block text-xs mb-1">पंक्तियाँ (Rows):</label>
+        <input type="number" id="tbl-rows" value="4" min="1" max="30" class="ribbon-input w-full">
+      </div>
+      <div>
+        <label class="block text-xs mb-1">कॉलम (Columns):</label>
+        <input type="number" id="tbl-cols" value="3" min="1" max="12" class="ribbon-input w-full">
+      </div>
+    </div>
+  `,[
+    {label:'रद्द करें',onClick:closeModal},
+    {label:'टेबल बनाएँ',primary:true,onClick:()=>{
+      const rows=Math.max(1,parseInt($('tbl-rows').value,10)||3);
+      const cols=Math.max(1,parseInt($('tbl-cols').value,10)||3);
+      let html='<table><tbody>';
+      for(let r=0;r<rows;r++){
+        html+='<tr>';
+        for(let c=0;c<cols;c++){
+          html+=r===0?'<th style="background:#f3f4f6">शीर्षक '+(c+1)+'</th>':'<td>&nbsp;</td>';
+        }
+        html+='</tr>';
+      }
+      html+='</tbody></table><p><br></p>';
+      closeModal();
+      restore();
+      document.execCommand('insertHTML',false,html);
+      save();
+    }}
+  ]);
+};
+
+$('ins-img-btn').onclick=()=>$('ins-img-input').click();
+$('ins-img-input').onchange=e=>{
+  const file=e.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    restore();
+    document.execCommand('insertHTML',false,`<p><img src="${ev.target.result}" alt="Image" style="max-width:75%;"></p>`);
+    save();
+  };
+  reader.readAsDataURL(file);
+  e.target.value='';
+};
+
+$('ins-box-btn').onclick=()=>{
+  restore();
+  document.execCommand('insertHTML',false,`<div style="border:2px solid #185abd;background:#eff6ff;padding:14px 18px;border-radius:8px;margin:12px 0;"><b>महत्वपूर्ण सूचना:</b> यहाँ अपना टेक्स्ट लिखें...</div><p><br></p>`);
+  save();
+};
+
+$('ins-link-btn').onclick=()=>{
+  openModal('लिंक जोड़ें (Insert Hyperlink)',`
+    <div>
+      <label class="block text-xs mb-1">वेबसाइट का पता (URL):</label>
+      <input type="url" id="link-url" placeholder="https://example.com" class="ribbon-input w-full">
+    </div>
+  `,[
+    {label:'रद्द करें',onClick:closeModal},
+    {label:'लिंक लगाएँ',primary:true,onClick:()=>{
+      const url=$('link-url').value.trim();
+      closeModal();
+      if(url){restore();document.execCommand('createLink',false,url);save();}
+    }}
+  ]);
+};
+
+$('ins-date-btn').onclick=()=>{
+  restore();
+  const d=new Date().toLocaleDateString('hi-IN',{day:'numeric',month:'long',year:'numeric'});
+  document.execCommand('insertText',false,'दिनांक: '+d+' ');
+  save();
+};
+
+document.querySelectorAll('.sym-btn').forEach(btn=>{
+  btn.onclick=()=>{
+    restore();
+    const sym=btn.textContent;
+    const out=$('auto').checked?convert(sym):sym;
+    if($('auto').checked){
+      document.execCommand('insertHTML',false,`<span style="font-family:'${$('cf').value}',monospace">${out}</span>`);
+    }else{
+      document.execCommand('insertText',false,sym);
+    }
+    save();
+  };
+});
+
+/* ============================================================================
+   6. PAGE LAYOUT & ZOOM CONTROLS
+   ============================================================================ */
+const pageShell=$('page-shell');
+
+function updatePageDimensions(){
+  const size=$('page-size').value;
+  const orient=$('page-orient').value;
+  let w=816,h=1056;
+  if(size==='letter'){w=816;h=1056;}
+  else if(size==='legal'){w=816;h=1344;}
+  else {w=794;h=1123;} // A4
+  if(orient==='landscape'){
+    const tmp=w;w=h;h=tmp;
+  }
+  pageShell.style.width=w+'px';
+  pageShell.style.minHeight=h+'px';
+  ed.style.minHeight=h+'px';
+}
+
+$('page-size').onchange=updatePageDimensions;
+$('page-orient').onchange=updatePageDimensions;
+$('page-margin').onchange=()=>{ed.style.padding=$('page-margin').value;};
+
+$('page-border').onchange=()=>{
+  pageShell.classList.remove('border-box','border-double','border-dashed','border-gold');
+  if($('page-border').value!=='none')pageShell.classList.add($('page-border').value);
+};
+
+$('page-watermark').onchange=()=>{
+  $('watermark-display').textContent=$('page-watermark').value;
+};
+
+$('page-color').oninput=()=>{
+  pageShell.style.backgroundColor=$('page-color').value;
+};
+
+$('cols-1').onclick=()=>{ed.style.columnCount='1';};
+$('cols-2').onclick=()=>{ed.style.columnCount='2';ed.style.columnGap='36px';};
+
+// Zoom Controls
+function applyZoom(val){
+  const z=Math.min(160,Math.max(60,parseInt(val,10)||100));
+  $('zoom-slider').value=z;
+  $('zoom-val').textContent=z+'%';
+  pageShell.style.transform=`scale(${z/100})`;
+}
+$('zoom-slider').oninput=e=>applyZoom(e.target.value);
+$('zoom-in').onclick=()=>applyZoom(parseInt($('zoom-slider').value,10)+10);
+$('zoom-out').onclick=()=>applyZoom(parseInt($('zoom-slider').value,10)-10);
+$('zoom-val').onclick=()=>applyZoom(100);
+
+/* ============================================================================
+   7. FILE OPERATIONS (NEW, OPEN, SAVE .DOC / .HTML / .TXT, PRINT, TEMPLATES)
+   ============================================================================ */
+function confirmNewDoc(){
+  openModal('नया दस्तावेज़ (New Document)',`
+    <p>क्या आप वर्तमान पेज को साफ़ करके नया दस्तावेज़ शुरू करना चाहते हैं?</p>
+  `,[
+    {label:'नहीं',onClick:closeModal},
+    {label:'हाँ, नया पेज बनाएँ',primary:true,onClick:()=>{
+      ed.innerHTML='';
+      save();
+      closeModal();
+      ed.focus();
+      flash('नया पेज तैयार है ✓');
+    }}
+  ]);
+}
+$('nw').onclick=confirmNewDoc;
+$('file-new').onclick=confirmNewDoc;
+
+$('file-open-btn').onclick=()=>$('file-open-input').click();
+$('file-open-input').onchange=e=>{
+  const f=e.target.files[0];
+  if(!f)return;
+  $('doc-title').value=f.name.replace(/\.[^.]+$/,'');
+  const r=new FileReader();
+  r.onload=ev=>{
+    const content=ev.target.result;
+    if(f.name.endsWith('.txt')){
+      ed.innerText=content;
+    }else{
+      ed.innerHTML=content;
+    }
+    save();
+    flash('फ़ाइल खुल गई ✓');
+  };
+  r.readAsText(f);
+  e.target.value='';
+};
+
+function downloadFile(content,ext,mime){
+  const name=($('doc-title').value.trim()||'दस्तावेज़')+ext;
+  const blob=new Blob([content],{type:mime});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  flash(name+' डाउनलोड हो गई ✓');
+}
+
+function saveAsWordDoc(){
+  const html=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+  <head><meta charset='utf-8'><title>${$('doc-title').value}</title></head>
+  <body style="font-family:'Noto Sans Devanagari',Mangal,Calibri,sans-serif;font-size:14pt;line-height:1.6;">
+  ${ed.innerHTML}
+  </body></html>`;
+  downloadFile(html,'.doc','application/msword;charset=utf-8');
+}
+
+$('file-save-doc').onclick=saveAsWordDoc;
+$('qa-save').onclick=saveAsWordDoc;
+$('file-save-html').onclick=()=>downloadFile(ed.innerHTML,'.html','text/html;charset=utf-8');
+$('file-save-txt').onclick=()=>downloadFile(ed.innerText,'.txt','text/plain;charset=utf-8');
+
+$('file-print').onclick=()=>window.print();
+$('qa-print').onclick=()=>window.print();
+
+// Ready-made Hindi Templates
+$('file-template-letter').onclick=()=>{
+  ed.innerHTML=`<p style="text-align:center;"><b>कार्यालय आदेश / शासकीय पत्र</b></p>
+  <p style="text-align:right;">दिनांक: ${new Date().toLocaleDateString('hi-IN')}</p>
+  <p><b>प्रति,</b><br>श्रीमान मुख्य अधिकारी महोदय,<br>जिला कार्यालय</p>
+  <p><b>विषय:</b> आवश्यक कार्यवाही हेतु सूचना पत्र।</p>
+  <p>महोदय,<br>उपरोक्त विषयांतर्गत निवेदन है कि...</p>
+  <p style="text-align:right;margin-top:40px;"><b>भवदीय,</b><br>(हस्ताक्षर)</p>`;
+  save();
+  flash('सरकारी पत्र टेम्पलेट लोड हो गया ✓');
+};
+
+$('file-template-app').onclick=()=>{
+  ed.innerHTML=`<p><b>सेवा में,</b><br>श्रीमान प्रधानाचार्य / प्रबंधक महोदय,<br>[संस्था का नाम]</p>
+  <p><b>विषय:</b> अवकाश प्रदान करने के संबंध में प्रार्थना-पत्र।</p>
+  <p>महोदय,<br>सविनय निवेदन है कि मुझे आवश्यक कार्य होने के कारण दिनांक ... से ... तक अवकाश की आवश्यकता है। अतः मुझे अवकाश प्रदान करने की कृपा करें।</p>
+  <p style="text-align:right;margin-top:36px;"><b>आपका आज्ञाकारी,</b><br>नाम: .......................<br>दिनांक: ${new Date().toLocaleDateString('hi-IN')}</p>`;
+  save();
+  flash('प्रार्थना-पत्र टेम्पलेट लोड हो गया ✓');
+};
+
+/* ============================================================================
+   8. FIND & REPLACE, SHORTCUT CHART & PC APP GUIDE MODALS
+   ============================================================================ */
+function openFindModal(){
+  openModal('खोजें और बदलें (Find & Replace)',`
+    <div class="space-y-3">
+      <div>
+        <label class="block text-xs mb-1">क्या खोजें (Find):</label>
+        <input type="text" id="find-in" class="ribbon-input w-full" placeholder="शब्द लिखें...">
+      </div>
+      <div>
+        <label class="block text-xs mb-1">किससे बदलें (Replace with):</label>
+        <input type="text" id="rep-in" class="ribbon-input w-full" placeholder="नया शब्द...">
+      </div>
+    </div>
+  `,[
+    {label:'बंद करें',onClick:closeModal},
+    {label:'सब बदलें (Replace All)',primary:true,onClick:()=>{
+      const f=$('find-in').value;
+      const r=$('rep-in').value;
+      if(!f)return;
+      ed.innerHTML=ed.innerHTML.split(f).join(r);
+      save();
+      closeModal();
+      flash('सभी शब्द बदल दिए गए ✓');
+    }}
+  ]);
+}
+$('btn-find-open').onclick=openFindModal;
+$('btn-find-ribbon').onclick=openFindModal;
+
+$('btn-kd-chart').onclick=()=>{
+  openModal('कृतिदेव 010 उपयोगी शॉर्टकट और नियम',`
+    <div class="text-xs space-y-2 leading-relaxed">
+      <p class="p-2 bg-orange-500/10 rounded border border-orange-500/30">
+        <b>Auto कृतिदेव टिप:</b> आपको कृतिदेव कीबोर्ड याद करने की ज़रूरत नहीं है! बस सामान्य हिंदी (जैसे <b>नमस्ते</b> या <b>प्रार्थना</b>) टाइप करें और Space दबाएँ।
+      </p>
+      <div class="grid grid-cols-2 gap-2 pt-1 font-mono">
+        <div class="p-1.5 border rounded">क = d | ख = [k</div>
+        <div class="p-1.5 border rounded">ग = x | घ = ?k</div>
+        <div class="p-1.5 border rounded">च = p | छ = N</div>
+        <div class="p-1.5 border rounded">ज = t | झ = &gt;</div>
+        <div class="p-1.5 border rounded">त = r | थ = Fk</div>
+        <div class="p-1.5 border rounded">द = n | ध = /k</div>
+        <div class="p-1.5 border rounded">प = i | फ = Q</div>
+        <div class="p-1.5 border rounded">म = e | य = ;</div>
+        <div class="p-1.5 border rounded">र = j | ल = y</div>
+        <div class="p-1.5 border rounded">श = 'k | स = l</div>
+        <div class="p-1.5 border rounded">क्ष = {k | त्र = =</div>
+        <div class="p-1.5 border rounded">ज्ञ = K | श्र = J</div>
+      </div>
+    </div>
+  `,[{label:'ठीक है',primary:true,onClick:closeModal}]);
+};
+
+$('btn-pc-guide').onclick=()=>{
+  openModal('🖥️ इसे अपने PC में असली Software की तरह कैसे चलाएँ?',`
+    <div class="space-y-2.5 text-xs leading-relaxed">
+      <p><b>तरीका 1: बिना किसी सॉफ्टवेयर के (1 मिनट में):</b></p>
+      <ol class="list-decimal pl-5 space-y-1">
+        <li>इस कोड को अपने कंप्यूटर के Desktop पर <b>MS_Word_KrutiDev.html</b> नाम से सेव करें।</li>
+        <li>इसे <b>Google Chrome</b> या <b>Microsoft Edge</b> में डबल-क्लिक करके खोलें।</li>
+        <li>ब्राउज़र के ऊपर दाईं तरफ <b>3 डॉट्स (⋮)</b> पर क्लिक करें &rarr; <b>Save and Share</b> (या <b>Apps</b>) &rarr; <b>Install Page as App</b> पर क्लिक करें।</li>
+        <li>बस! आपके Desktop और Taskbar पर WhatsApp और MS Word की तरह इसका आइकन बन जाएगा और यह बिना ब्राउज़र बार के खुलेगा!</li>
+      </ol>
+    </div>
+  `,[{label:'समझ गया ✓',primary:true,onClick:closeModal}]);
+};
+
+// Dark / Light Theme Toggle
+$('btn-theme').onclick=()=>{
+  const root=document.documentElement;
+  const isDark=root.getAttribute('data-theme')==='dark';
+  root.setAttribute('data-theme',isDark?'light':'dark');
+  $('theme-icon').className=isDark?'fa-solid fa-moon':'fa-solid fa-sun';
+};
+
+// Keyboard Shortcuts (Ctrl+S, Ctrl+H)
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){
+    e.preventDefault();
+    saveAsWordDoc();
+  }else if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='h'){
+    e.preventDefault();
+    openFindModal();
+  }
+});
+
+// Load saved document from localStorage ('kd-doc')
+try{
+  const d=localStorage.getItem('kd-doc');
+  if(d)ed.innerHTML=d;
+}catch(e){}
+save();
+</script>
+</body>
+</html>
